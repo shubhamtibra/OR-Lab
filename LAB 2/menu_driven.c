@@ -3,42 +3,62 @@
 #include <stdbool.h>
 
 int numOfCombinations = 0;
-bool basicSoln[100], feasibleSoln[100], degSoln[100];
+bool basicSoln[100], feasibleSoln[100], nondegSoln[100];
 
 void printFeasible(float (*allBSoln)[100], int n){
-    int i, j;
+    int i, j, temp = 0;
     printf("The basic feasible solutions of the problem are:\n\n");
     for(i = 0; i < numOfCombinations; i++){
         if (feasibleSoln[i]) {
+            temp = 1;
         for(j = 1; j <= n; j++)
             printf("x_%d = %f, ", j, allBSoln[i][j]);
     printf("\n");
     }
 }
+if (!temp) printf("No such solutions\n");
 }
 
 void printBasic(float (*allBSoln)[100], int n){
-    int i, j;
+    int i, j, temp = 0;
     printf("The basic solutions of the problem are:\n\n");
     for(i = 0; i < numOfCombinations; i++){
         if (basicSoln[i]) {
+            temp = 1;
         for(j = 1; j <= n; j++)
             printf("x_%d = %f, ", j, allBSoln[i][j]);
     printf("\n");
     }
 }
+if (!temp) printf("No such solutions\n");
 }
 
 void printDeg(float (*allBSoln)[100], int n){
-    int i, j;
+    int i, j, temp = 0;
     printf("The degenerate solutions of the problem are:\n\n");
     for(i = 0; i < numOfCombinations; i++){
-        if (degSoln[i]) {
+        if (feasibleSoln[i] && !nondegSoln[i]) {
+            temp = 1;
         for(j = 1; j <= n; j++)
             printf("x_%d = %f, ", j, allBSoln[i][j]);
     printf("\n");
     }
 }
+if (!temp) printf("No such solutions\n");
+}
+
+void printNonDeg(float (*allBSoln)[100], int n){
+    int i, j, temp = 0;
+    printf("The non-degenerate solutions of the problem are:\n\n");
+    for(i = 0; i < numOfCombinations; i++){
+        if (nondegSoln[i]) {
+            temp = 1;
+        for(j = 1; j <= n; j++)
+            printf("x_%d = %f, ", j, allBSoln[i][j]);
+    printf("\n");
+    }
+}
+if (!temp) printf("No such solutions\n");
 }
 
 void readAugMatrix(float (*A)[101], int m, int n){
@@ -128,7 +148,7 @@ int main()
     for(i = 0; i < 100; i++){
         basicSoln[i] = true;
         feasibleSoln[i] = true;
-        degSoln[i] = true;
+        nondegSoln[i] = true;
     }
     for (i = 0; i < n; i++)
         columnIndices[i] = i + 1;
@@ -154,14 +174,14 @@ int main()
             if (!isfinite(bSolutions[feasible])){
                 basicSoln[i] = false;
                 feasibleSoln[i] = false;
-                degSoln[i] = false;
+                nondegSoln[i] = false;
             }
             if(bSolutions[feasible] < 0){
                 feasibleSoln[i] = false;
-                degSoln[i] = false;
+                nondegSoln[i] = false;
             }
             if(bSolutions[feasible] == 0)
-                degSoln[i] = false;
+                nondegSoln[i] = false;
         }
         for(l = 1; l <= n; l++){
             if (l == combinations[i][temp]){
@@ -178,7 +198,8 @@ int main()
         printf("1. Print basic solutions.\n");
         printf("2. Print basic feasible solutions.\n");
         printf("3. Print degenerate solutions\n");
-        printf("4. Exit.\n");
+        printf("4. Print non-degenerate solutions\n");
+        printf("5. Exit.\n");
         scanf("%d", &choice);
         switch(choice){
             case 1:
@@ -191,6 +212,9 @@ int main()
             printDeg(allBSoln, n);
             break;
             case 4:
+            printNonDeg(allBSoln, n);
+            break;
+            case 5:
             exit = 1;
             break;
 }
