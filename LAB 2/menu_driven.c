@@ -3,7 +3,45 @@
 #include <stdbool.h>
 
 int numOfCombinations = 0;
-bool basicSoln[100], feasibleSoln[100], nondegSoln[100];
+bool basicSoln[100], feasibleSoln[100], nondegSoln[100], extremePoints[100];
+
+void printExtreme(float (*allBSoln)[100], float objFunction[], int n, int m){
+    int i, j, temp = 0;
+    float numbers[1001], sum = 0, largestValue;
+    for(i = 0; i <= 1000; i++) numbers[i] = -1;
+    for(i = 0; i < numOfCombinations; i++){
+            if(!feasibleSoln[i]) continue;
+        sum = 0;
+        for(j = 1; j <= n; j++)
+            sum += objFunction[j]*allBSoln[i][j];
+        numbers[i] = sum;
+    }
+    largestValue = numbers[0];
+    for(i = 0; i < 100; i++) extremePoints[i] = false;
+    extremePoints[0] = true;
+
+    for (i = 1; i < numOfCombinations; i++) {
+        if (numbers[i] > largestValue) {
+            largestValue = numbers[i]; // Update largestValue
+        for(j = 0; j < 100; j++) extremePoints[j] = false;    // Get rid of indices of smaller values
+        extremePoints[i] = true;     // Add this index
+    }
+    else if (numbers[i] == largestValue) {
+        extremePoints[i] = true;      // Add this index
+    }
+}
+
+printf("The extreme points of the problem are:\n\n");
+    for(i = 0; i < numOfCombinations; i++){
+        if (extremePoints[i]) {
+            temp = 1;
+        for(j = 1; j <= m; j++)
+            printf("x_%d = %f \t ", j, allBSoln[i][j]);
+    printf("\n");
+    }
+}
+if (!temp) printf("No such points.\n");
+}
 
 void printFeasible(float (*allBSoln)[100], int n){
     int i, j, temp = 0;
@@ -199,7 +237,8 @@ int main()
         printf("2. Print basic feasible solutions.\n");
         printf("3. Print degenerate solutions\n");
         printf("4. Print non-degenerate solutions\n");
-        printf("5. Exit.\n");
+        printf("5. Print extreme points.\n");
+        printf("6. Exit.\n");
         scanf("%d", &choice);
         switch(choice){
             case 1:
@@ -215,6 +254,18 @@ int main()
             printNonDeg(allBSoln, n);
             break;
             case 5:
+                {
+                // Objective function
+                float objFunction[100];
+                printf("Give the Objective function.\n");
+                for(i = 1; i <= n; i++){
+                    printf("Coefficient of x_%d:   ", i);
+                    scanf("%f", &objFunction[i]);
+                }
+                printExtreme(allBSoln, objFunction, n, m);
+                break;
+                }
+            case 6:
             exit = 1;
             break;
 }
